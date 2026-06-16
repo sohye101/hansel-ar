@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>헨젤과 그레텔 AR 동화</title>
+
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+<script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+#storyBox {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+    z-index: 999;
+    font-size: 18px;
+}
+
+#nextBtn {
+    margin-top: 10px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 8px;
+    background: orange;
+    color: white;
+    font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="storyBox">
+    <div id="storyText">
+        📖 마커를 비춰 동화를 시작하세요!
+    </div>
+    <button id="nextBtn">다음 장면</button>
+</div>
+
+<a-scene
+embedded
+arjs="sourceType: webcam;"
+vr-mode-ui="enabled: false">
+
+<a-marker preset="hiro">
+
+<a-entity id="sceneRoot">
+
+<!-- 헨젤 -->
+<a-sphere id="hanselHead"
+position="-0.7 1.2 0"
+radius="0.18"
+color="#FFDAB9"></a-sphere>
+
+<a-box id="hanselBody"
+position="-0.7 0.8 0"
+depth="0.2"
+height="0.4"
+width="0.25"
+color="blue"></a-box>
+
+<!-- 그레텔 -->
+<a-sphere id="gretelHead"
+position="-0.2 1.2 0"
+radius="0.18"
+color="#FFDAB9"></a-sphere>
+
+<a-cone id="gretelBody"
+position="-0.2 0.75 0"
+radius-bottom="0.2"
+radius-top="0.08"
+height="0.5"
+color="pink"></a-cone>
+
+<!-- 과자집 -->
+<a-box id="houseBase"
+position="0.8 0.7 0"
+width="0.8"
+height="0.5"
+depth="0.5"
+color="#D2691E"
+visible="false"></a-box>
+
+<a-cone id="houseRoof"
+position="0.8 1.15 0"
+radius-bottom="0.6"
+radius-top="0"
+height="0.4"
+color="red"
+visible="false"></a-cone>
+
+<!-- 마녀 -->
+<a-sphere id="witchHead"
+position="0.8 1.2 0"
+radius="0.18"
+color="green"
+visible="false"></a-sphere>
+
+<a-cone id="witchBody"
+position="0.8 0.75 0"
+radius-bottom="0.25"
+radius-top="0.1"
+height="0.6"
+color="black"
+visible="false"></a-cone>
+
+<!-- 화덕 -->
+<a-box id="oven"
+position="0.8 0.7 0"
+width="0.7"
+height="0.5"
+depth="0.5"
+color="#8B4513"
+visible="false"></a-box>
+
+<!-- 불꽃 -->
+<a-cone id="fire"
+position="0.8 1 0"
+radius-bottom="0.15"
+radius-top="0"
+height="0.4"
+color="orange"
+visible="false">
+
+<a-animation
+attribute="scale"
+direction="alternate"
+dur="500"
+repeat="indefinite"
+to="1.2 1.2 1.2">
+</a-animation>
+
+</a-cone>
+
+</a-entity>
+
+<a-text
+id="titleText"
+value="숲"
+align="center"
+position="0 1.5 0"
+scale="2 2 2">
+</a-text>
+
+</a-marker>
+
+<a-entity camera></a-entity>
+
+</a-scene>
+
+<script>
+
+const scenes = [
+
+{
+title:"🌲 숲",
+text:"헨젤과 그레텔은 숲에서 길을 잃었습니다.",
+scene:"forest"
+},
+
+{
+title:"🍞 빵 부스러기",
+text:"헨젤은 빵 부스러기를 떨어뜨렸습니다.",
+scene:"bread"
+},
+
+{
+title:"🐦 새들",
+text:"새들이 빵 부스러기를 모두 먹어버렸습니다.",
+scene:"birds"
+},
+
+{
+title:"🍭 과자집",
+text:"두 남매는 과자집을 발견했습니다.",
+scene:"house"
+},
+
+{
+title:"🧙 마녀 등장",
+text:"과자집에는 무서운 마녀가 살고 있었습니다.",
+scene:"witch"
+},
+
+{
+title:"🔥 화덕 작전",
+text:"그레텔은 마녀를 화덕 앞으로 유인했습니다.",
+scene:"oven"
+},
+
+{
+title:"💥 마녀 퇴치",
+text:"마녀는 화덕 속으로 떨어졌습니다.",
+scene:"fire"
+},
+
+{
+title:"🏡 집으로 귀환",
+text:"헨젤과 그레텔은 보물을 가지고 집으로 돌아갔습니다. 동화가 끝났습니다.",
+scene:"end"
+}
+
+];
+
+let current = -1;
+
+const btn = document.getElementById("nextBtn");
+
+btn.addEventListener("click", () => {
+
+current++;
+
+if(current >= scenes.length){
+current = -1;
+
+document.getElementById("storyText").innerHTML =
+"📖 마커를 비춰 동화를 시작하세요!";
+
+document.getElementById("titleText")
+.setAttribute("value","헨젤과 그레텔");
+
+btn.innerText = "다음 장면";
+
+return;
+}
+
+document.getElementById("storyText").innerHTML =
+"📖 " + scenes[current].text;
+
+document.getElementById("titleText")
+.setAttribute("value", scenes[current].title);
+
+
+document.getElementById("houseBase").setAttribute("visible",false);
+document.getElementById("houseRoof").setAttribute("visible",false);
+document.getElementById("witchHead").setAttribute("visible",false);
+document.getElementById("witchBody").setAttribute("visible",false);
+document.getElementById("oven").setAttribute("visible",false);
+document.getElementById("fire").setAttribute("visible",false);
+
+switch(scenes[current].scene){
+
+case "house":
+document.getElementById("houseBase").setAttribute("visible",true);
+document.getElementById("houseRoof").setAttribute("visible",true);
+break;
+
+case "witch":
+document.getElementById("houseBase").setAttribute("visible",true);
+document.getElementById("houseRoof").setAttribute("visible",true);
+document.getElementById("witchHead").setAttribute("visible",true);
+document.getElementById("witchBody").setAttribute("visible",true);
+break;
+
+case "oven":
+document.getElementById("oven").setAttribute("visible",true);
+document.getElementById("witchHead").setAttribute("visible",true);
+document.getElementById("witchBody").setAttribute("visible",true);
+break;
+
+case "fire":
+document.getElementById("oven").setAttribute("visible",true);
+document.getElementById("fire").setAttribute("visible",true);
+break;
+}
+
+if(current === scenes.length - 1){
+btn.innerText = "다시 보기";
+}else{
+btn.innerText = "다음 장면";
+}
+
+});
+
+</script>
+
+</body>
+</html>
